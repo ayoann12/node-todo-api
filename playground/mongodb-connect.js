@@ -23,20 +23,20 @@ MongoClient.connect("mongodb://localhost:27017/TodoApp", (error, client) => {
 		console.log(JSON.stringify(result.ops, undefined, 2));
 	}); */
 
-	/* db.collection("Users").insertOne({
+	db.collection("Users").insertOne({
+		_id: 12345,
 		name: {
-			_id: 12345,
-			first: "Othniel",
+			first: "Yorim",
 			last: "Adopo"
 		},
 		location: "Cocody",
-		age: 19
+		age: 14
 	}, (error, result) => {
 		if (error) {
 			return console.log("Insertion failed");
 		}
-		console.log(result.ops[0]._id.getTimestamp());
-	}); */
+		console.log(result.ops);
+	});
 	/* eslint-enable */
 	client.close();
 });
