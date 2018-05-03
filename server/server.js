@@ -2,7 +2,10 @@ const {ObjectId} = require("mongodb");
 const express = require("express");
 const bodyParser = require("body-parser");
 
+/* eslint-disable */
 const {mongoose} = require("./db/mongoose");
+/* eslint-enable */
+
 const {Todo} = require("./models/todo");
 
 // In case i test it somewhere than local - Heroku for instance - i set 'port' variable to the 'env' default port
@@ -43,6 +46,22 @@ app.get("/todos/:id", (req, res) => {
 		return res.status(404).send(`ID ${id} is invalid`);
 	}
 	Todo.findById(id).then((todo) => {
+		if (!todo) {
+			return res.status(404).send(`No todo found with id ${id}`);
+		}
+		res.send(todo);
+	}).catch((err) => {
+		res.status(400).send(err);
+	});
+});
+
+// Delete one particular todo by id
+app.delete("/todos/:id", (req, res) => {
+	const id = req.params.id;
+	if (!ObjectId.isValid(id)) {
+		return res.status(404).send(`ID ${id} is invalid`);
+	}
+	Todo.findByIdAndRemove(id).then((todo) => {
 		if (!todo) {
 			return res.status(404).send(`No todo found with id ${id}`);
 		}

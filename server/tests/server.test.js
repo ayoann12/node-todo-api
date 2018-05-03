@@ -23,7 +23,7 @@ beforeEach((done) => {
 	}).then(() => done());
 });
 
-describe("Test of POST /todos", () => {
+describe("Test of POST /todos : Create todo", () => {
 	it("should create a new todo", (done) => {
 		const text = "This is a test case";
 
@@ -36,7 +36,7 @@ describe("Test of POST /todos", () => {
 			.expect((res) => {
 				expect(res.body.text).toBe(text);
 			})
-			.end((err, res) => {
+			.end((err) => {
 				if (err) {
 					return done(err);
 				}
@@ -56,7 +56,7 @@ describe("Test of POST /todos", () => {
 			.post("/todos")
 			.send({})
 			.expect(400)
-			.end((err, res) => {
+			.end((err) => {
 				if (err) {
 					return done(err);
 				}
@@ -69,7 +69,7 @@ describe("Test of POST /todos", () => {
 	});
 });
 
-describe("Test of GET /todos", () => {
+describe("Test of GET /todos : List todos", () => {
 	it("should return the todos list", (done) => {
 		request(app)
 			.get("/todos")
@@ -77,17 +77,15 @@ describe("Test of GET /todos", () => {
 			.expect(200)
 			.expect((res) => {
 				expect(res.body.todos.length).toBe(2);
+				done();
 			})
-			.end((err, res) => {
-				if (err) {
-					return done(err);
-				}
+			.catch((err) => {
+				done(err);
 			});
-		done();
 	});
 });
 
-describe("Test of GET /todos/:id", () => {
+describe("Test of GET /todos/:id : Search todo by ID", () => {
 	it("should return the todo which ID was indicated", (done) => {
 		request(app)
 			.get(`/todos/${todos[0]._id}`)
@@ -95,13 +93,11 @@ describe("Test of GET /todos/:id", () => {
 			.expect(200)
 			.expect((res) => {
 				expect(res.body.text).toBe(todos[0].text);
+				done();
 			})
-			.end((err, res) => {
-				if (err) {
-					return done(err);
-				}
+			.catch((err) => {
+				done(err);
 			});
-		done();
 	});
 
 	it("should return 404 for bad ID", (done) => {
@@ -112,13 +108,11 @@ describe("Test of GET /todos/:id", () => {
 			.expect(404)
 			.expect((res) => {
 				expect(res.text).toBe(`ID ${id} is invalid`);
+				done();
 			})
-			.end((err, res) => {
-				if (err) {
-					return done(err);
-				}
+			.catch((err) => {
+				done(err);
 			});
-		done();
 	});
 
 	it("should return 404 for inexistant ID", (done) => {
@@ -129,12 +123,56 @@ describe("Test of GET /todos/:id", () => {
 			.expect(404)
 			.expect((res) => {
 				expect(res.text).toBe(`No todo found with id ${id}`);
+				done();
 			})
-			.end((err, res) => {
-				if (err) {
-					return done(err);
-				}
+			.catch((err) => {
+				done(err);
 			});
-		done();
+	});
+});
+
+describe("Test of DELETE /todos/:id : Remove todo by ID", () => {
+	it("should return the todo which ID was indicated", (done) => {
+		request(app)
+			.delete(`/todos/${todos[0]._id}`)
+			.send()
+			.expect(200)
+			.expect((res) => {
+				expect(res.body.text).toBe(todos[0].text);
+				done();
+			})
+			.catch((err) => {
+				done(err);
+			});
+	});
+
+	it("should return 404 for bad ID", (done) => {
+		const id = 123;
+		request(app)
+			.get(`/todos/${id}`)
+			.send()
+			.expect(404)
+			.expect((res) => {
+				expect(res.text).toBe(`ID ${id} is invalid`);
+				done();
+			})
+			.catch((err) => {
+				done(err);
+			});
+	});
+
+	it("should return 404 for inexistant ID", (done) => {
+		const id = "000000000000000000000000";
+		request(app)
+			.get(`/todos/${id}`)
+			.send()
+			.expect(404)
+			.expect((res) => {
+				expect(res.text).toBe(`No todo found with id ${id}`);
+				done();
+			})
+			.catch((err) => {
+				done(err);
+			});
 	});
 });
