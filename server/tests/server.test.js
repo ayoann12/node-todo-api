@@ -14,7 +14,9 @@ const todos = [{
 	text: "First todo"
 }, {
 	_id: new ObjectId,
-	text: "Second todo"
+	text: "Second todo",
+	completed: true,
+	completedAt: 333
 }];
 
 beforeEach((done) => {
@@ -165,6 +167,80 @@ describe("Test of DELETE /todos/:id : Remove todo by ID", () => {
 		const id = "000000000000000000000000";
 		request(app)
 			.get(`/todos/${id}`)
+			.send()
+			.expect(404)
+			.expect((res) => {
+				expect(res.text).toBe(`No todo found with id ${id}`);
+				done();
+			})
+			.catch((err) => {
+				done(err);
+			});
+	});
+});
+
+describe("Test of PATCH /todos/:id : Update todo by ID", () => {
+	it("should update the todo which ID was indicated", (done) => {
+		const text = "First todo, updated version";
+
+		request(app)
+			.patch(`/todos/${todos[0]._id}`)
+			.send({
+				completed: true,
+				text: text
+			})
+			.expect(200)
+			.expect((res) => {
+				expect(res.body.text).toBe(text);
+				expect(res.body.completed).toBe(true);
+				expect(typeof res.body.completedAt).toBe("number");
+				done();
+			})
+			.catch((err) => {
+				done(err);
+			});
+	});
+
+	it("should clear *completedAt* when todo is not completed", (done) => {
+		const text = "Second todo, updated version";
+
+		request(app)
+			.patch(`/todos/${todos[1]._id}`)
+			.send({
+				completed: false,
+				text: text
+			})
+			.expect(200)
+			.expect((res) => {
+				expect(res.body.text).toBe(text);
+				expect(res.body.completed).toBe(false);
+				expect(res.body.completedAt).toBe(null);
+				done();
+			})
+			.catch((err) => {
+				done(err);
+			});
+	});
+
+	it("should return 404 for bad ID", (done) => {
+		const id = 123;
+		request(app)
+			.patch(`/todos/${id}`)
+			.send()
+			.expect(404)
+			.expect((res) => {
+				expect(res.text).toBe(`ID ${id} is invalid`);
+				done();
+			})
+			.catch((err) => {
+				done(err);
+			});
+	});
+
+	it("should return 404 for inexistant ID", (done) => {
+		const id = "000000000000000000000000";
+		request(app)
+			.patch(`/todos/${id}`)
 			.send()
 			.expect(404)
 			.expect((res) => {
