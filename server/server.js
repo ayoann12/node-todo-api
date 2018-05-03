@@ -1,3 +1,5 @@
+require("./config/config");
+
 const _ = require("lodash");
 const {ObjectId} = require("mongodb");
 const express = require("express");
@@ -9,7 +11,6 @@ const {mongoose} = require("./db/mongoose");
 
 const {Todo} = require("./models/todo");
 
-// In case i test it somewhere than local - Heroku for instance - i set 'port' variable to the 'env' default port
 const port = process.env.PORT || 3000;
 
 const app = express();

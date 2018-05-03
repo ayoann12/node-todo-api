@@ -1,7 +1,6 @@
 /* eslint-env node, mocha */
 /* eslint-disable import/no-dynamic-require */
 
-
 const expect = require("expect");
 const request = require("supertest");
 const {ObjectId} = require("mongodb");
@@ -19,10 +18,9 @@ const todos = [{
 	completedAt: 333
 }];
 
+
 beforeEach((done) => {
-	Todo.remove({}).then(() => {
-		Todo.insertMany(todos);
-	}).then(() => done());
+	Todo.insertMany(todos).then(() => done()).catch((err) => done(err));
 });
 
 describe("Test of POST /todos : Create todo", () => {
@@ -251,4 +249,8 @@ describe("Test of PATCH /todos/:id : Update todo by ID", () => {
 				done(err);
 			});
 	});
+});
+
+afterEach((done) => {
+	Todo.remove({}).then(() => done()).catch((err) => done(err));
 });
